@@ -208,3 +208,174 @@ ELB provides security policies for ALB
   - Go to LB -> scroll down to Attributes. Enable Delete Protection.
 
 ## Load Balancers Monitoring
+
+
+* All load balancer metrics are directly pushed to CloudWatch. 
+
+Here are the typical metrics:
+  * BackendConnectionErrors
+  * HealthyHostCount/UnhealthyHostCount
+  * HTTPCode_Backend_2XX:Successful
+  * HTTPCode_Backend_3XX:redirected request
+  * HTTPCode_Backend_4XX:client error
+  * HTTPCode_Backend_5XX:server error
+* Latency
+* RequestCount 
+* SurgeQueueLength:
+* The total number of requests (HTTP listener) or connections (TCP listener) that are pending routing to a healthy instance. Help to scale out ASG. **Maximum value is 1024.**
+* SpilloverCount: the total number of requests that were rejected because the surge queue is full.
+
+## Load Balancers Access Logs
+
+* Access logs from Load Balancers can be stored in S3 and contain:
+  * Time
+  * Client IP
+  * Latencies
+  * Request paths
+  * Server response
+  * Trace ID
+* Only pay for S3 storage
+* Helpful for compliance & auditing.
+* Helpful for keeping access data even after ELB or EC2s are terminated.
+* Access Logs are already encrypted.
+
+### Request Tracing
+
+* Request tracing - each HTTP request has an added custom header X-Amzn-Trace-ID
+* Useful in logs / distributed tracing platform to track a single request.
+* Not integrated with X-Ray.
+
+## Troubleshooting
+
+* HTTP 400: BAD_REQUEST - client sent a malformed response that does not meet HTTP specifications
+* HTTP 503: Service Unavailable - ensure you have healthy instances in every AZ that your LB is configured to respond in. Look for HealthyHostCount in CloudWatch.
+* HTTP 504: Gateway Timeout - Check if keep-alive settings on EC2 instances are enabled and make sure that the keep-alive timeout is greater than the idle timeout settings of the load balancer.
+* Set alarms and look at the documentation for troubleshooting.
+
+## Auto Scaling Groups
+
+* Load on websites and applications can change.
+* In the cloud, you can create and destroy instances quickly.
+* ASGs:
+  * Scale out to match increase load.
+  * Scale in to match decreased load.
+  * Ensure we have a minimum and maximum number of machines running
+  * Automatically register new instances to a load balancer
+
+![](./images/auto-scaling-groups.png)
+
+With a load balancer:
+
+![](./images/auto-scaling-groups-and-lbs.png)
+
+ASGs have the following attributes:
+* A launch configuration
+  * AMI + instance type
+  * EC2 user data
+  * EBS volumes
+  * Security Groups
+  * SSH key pair
+* Min size / max size / initial capacity
+* Network + subnet information
+* Load Balancer information
+* Scaling Policies 
+* Health checks can be based on EC2 or ELB status reports.
+
+### Auto Scaling Alarms
+
+* Possible to scale an ASG based on CloudWatch alarms
+* Alarm monitors a metric (e.g. average CPU)
+* Metrics are computed for the overall ASG instances
+* Based on the alarm
+  * We can create scale out policies
+  * We can create scale in policies
+
+* It is now possible to define "better" auto scaling rules that are dirwctly managed by EC2
+  * Target average CPU usage
+  * Number of requests on the ELB per instance
+  * Average network in
+  * Average network out
+
+### Custom Metrics
+
+* We can auto scale based on a custom metric (e.g. number of connected users)
+  * Send a custom metric from app on EC2 to CloudWatch (PutMetric API)
+  * Create CloudWatch alarm to react to low / high values.
+  * Use the CloudWatch alarm as the scaling policy for ASG.
+
+### Brain Dump
+
+* Scaling policies can be on CPU, Network and even custom emtrics, or based on a schedule.
+* ASGs use Launch configurations and you update an ASG by providing a new launch config.
+* IAM roles attached to an ASG will get assigned to EC2 instances
+* ASGs are free. You pay for the underlying resources being provisioned.
+* Having instances under an ASG means that if they get terminated for whatever reason, the ASG will restart them. Ensures availability.
+* ASG can terminate instances marked as unhealthy by a LB and hence replace them.
+
+
+Common exam question
+
+ELB health check for an EC2 is unhealthy, in the target group the EC2 is Healthy. Switch ASG health check type from `EC2` to `ELB`. The unhealthy instance will now be terminated, and a new EC2 provisioned.
+
+### Scaling Processes in ASG
+
+Very common, should know these for the exam:
+* Launch: add a new EC2 into the group, increases capacity
+* Terminate: remove EC2 from group, decrease capacity
+* HealthCheck: checks health of the instances
+* ReplaceUnhealthy: terminate unhealthy instances and recreate
+* AZRebalance: Balance the number of EC2 instances across AZ. **COMMON EXAM QUESTION**
+  * Imbalance in AZ spread
+  * Launch new instance, then terminate old instance.
+  * If you suspend Launch process, this will inhibit AZRebalance.
+  * If you suspend Terminate process, this will inhibit AZRebalance
+  * If you suspend the Terminate process, the ASG can grow up to 10% of its size (allowed during rebalances)
+  * ASG will remain at the increased capacity, as it can't terminate instances.
+
+Less common:
+* AlarmNotification: Accept Notification from CloudWatch.
+* ScheduledActions: Performs scheduled actions that you create.
+* AddToLoadBalancer: adds instances to the load balancer or target group.
+
+We can suspend all of the above processes! The ASG will not perform suspended processes.
+
+Fun Fact: You can modify instance health via the CLI.
+
+### ASG for SysOps
+
+* To ensure high availability, you need at least 2 instances running across 2 AZs in your SG (must first configure multi AZ ASG)
+* Health checks available:
+  * EC2 Status Checks
+  * ELB Health Checks
+* ASG will launch a new instance after terminating an unhealthy one.
+* ASG will not reboot unhealthy hosts for you.
+* Good to know CLI:
+  * set-instance-health
+  * terminate-instance-in-auto-scaling-group
+
+### Troubleshooting ASG
+
+* Number of instances are already running. Launching EC2 failed.
+  * ASG has reached the limit set by the DesiredCapacity. Update the ASG by providing a new value for the desired capacity
+* Launching EC2 instances is failing
+  * SGs does not exist. SG may have been deleted
+  * Key pair does not exist. May have been deleted
+* If the ASG fails to launch an instance for over 24 hours, it will automatically suspend the processes (administration suspension).
+
+### CloudWatch Metrics for ASG
+
+* Following metrics are available:
+  * GroupMinSize
+  * GroupMaxSize
+  * GroupDesiredCapacity
+  * GroupInServiceInstances
+  * GroupPendingInstances
+  * GroupStandbyInstances
+  * GroupTerminatingInstances
+  * GroupTotalInstances
+* Should enable metric collection to see the metrics
+  * Collected every minute.
+
+You can also monitor the underlying EC2s:
+* Basic monitoring: 5 minute granularity
+* Detailed monitoring: 1 minute granularity (paid option)
