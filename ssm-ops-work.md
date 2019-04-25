@@ -17,7 +17,7 @@
 * Works for both Windows and Linux OS
 * Integrated with CloudWatch, AWS Config & its free!
 
-## Features
+## Features
 
 * Resource Groups
 * Insights
@@ -34,7 +34,7 @@
    * Maintenance Windows
    * State Manager: define  and maintain configuration of OS and applications.
 
-## How SSM works
+## How SSM works
 
 * We need to install the SSM agent on to the systems we control.
 * Installed by default on Amazon Linux AMI and some Ubuntu AMI.
@@ -55,7 +55,7 @@ They're used for:
 In general, its better to have too many tags than too few.
 
 
-## Resource Groups
+## Resource Groups
 
 Create, view or mangage logical groups of resources with tags.
 
@@ -66,7 +66,7 @@ Allows creation of logical groups of resources such as
    * Regional service
    * Works with EC2, S3, DynamoDB and Lambda
 
-## Documents
+## Documents
 
 * SSM documents can be written in JSON or YAML
 * You define parameters and actions
@@ -130,7 +130,7 @@ mainSteps:
     - hostname
 ```    
 
-## Run Command
+## Run Command
 
 Can be asked on the exam.
 
@@ -152,7 +152,7 @@ There are different ways to use SSM to patch software or an OS:
 * Patch manager -> gives you compliance.
 * State manager -> ensures instances are in a consistent state (compliance).
 
-## Session Manager
+## Session Manager
 
 * Allows you to start a secure shell on your VM
 * Does not use SSH access and bastion hosts
@@ -166,7 +166,7 @@ There are different ways to use SSM to patch software or an OS:
   * All commands are logged to S3 / CloudWatch (auditing)
   * Access to Secure Shell done through User IAM, not SSH keys.
 
-## What if I lost my SSH key for an EC2?
+## What if I lost my SSH key for an EC2?
 
 Traditional, EBS backed:
 * Stop the instance, detach root volume
@@ -182,7 +182,7 @@ Instance Store backed EC2:
 * You can't stop the instance, otherwise data is lost. AWS recommends termination.
 * HOWEVER, You can use Session Manager access and edit the `~/.ssh/authorized_keys` directly.
 
-## Parameter Store
+## Parameter Store
 
 Accessible via 
 `EC2 -> Systems Manager Shared Resources -> Parameter Store.`
@@ -226,7 +226,7 @@ You can do this recursively for all parameters under `my-app` using the `--recur
 
 ``aws ssm get-parameters-by-path --path /my-app/dev/ --recursive`
 
-## Opsworks
+## Opsworks
 
 * Chef & Puppet help you perform server configuration automatically
 * They work great with EC2 & On PRemise VM

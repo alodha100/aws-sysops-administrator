@@ -10,22 +10,35 @@ CloudFormation is a declarative way of outlining our AWS infrastructure, for any
 **Table of Contents**
 
 - [CloudFormation](#cloudformation)
+  - [Benefits of CloudFormation](#benefits-of-cloudformation)
+  - [How does it work?](#how-does-it-work)
+  - [Deployment](#deployment)
   - [Parameters](#parameters)
+  - [Settings](#settings)
   - [Pseudo Parameters](#pseudo-parameters)
   - [Resources](#resources)
+    - [(Answers to) FAQS](#answers-to-faqs)
   - [Mappings](#mappings)
+  - [Outputs](#outputs)
+  - [Conditions](#conditions)
   - [Intrinsic Functions (THAT YOU MUST KNOW)](#intrinsic-functions-that-you-must-know)
+    - [Ref](#ref)
     - [Fn::GetAtt](#fngetatt)
+    - [Fn::Join](#fnjoin)
     - [Fn::Sub](#fnsub)
   - [User Data](#user-data)
   - [cfn-init](#cfn-init)
+  - [cfn-signal and wait conditions](#cfn-signal-and-wait-conditions)
     - [Troubleshooting](#troubleshooting)
     - [Rollback on failure](#rollback-on-failure)
+  - [Nested Stacks](#nested-stacks)
+  - [ChangeSets](#changesets)
+  - [DeletionPolicy](#deletionpolicy)
   - [Termination Protection](#termination-protection)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Benefits of CloudFormation
+## Benefits of CloudFormation
 
 - IAC
 - No resources are manually created
@@ -50,7 +63,7 @@ Separation of concern: create many stacks for many apps and many layers e.g:
 - Network stacks
 - App stacks
 
-## How does it work?
+## How does it work?
 
 - Templates must be uploaded to S3 and references in CloudFormation.
 - To update a template, we can't edit previous ones. We have to re-upload a new version of the template to AWS
@@ -71,7 +84,7 @@ Template Helpers:
 1. References
 2. Functions
 
-## Deployment
+## Deployment
 
 Manual Process:
 
@@ -90,7 +103,7 @@ A way to provide input to CF. They're super important to know about (esp for exa
 
 ASK YOURSELF - Is this CloudFormation resource configuration likely to change in the future? If yes, make it a parameter.
 
-## Settings
+## Settings
 
 Type
 
@@ -187,7 +200,7 @@ Resources:
         - !Ref ServerSecurityGroup
 ```
 
-### (Answers to) FAQS
+### (Answers to) FAQS
 
 - You cannot create a dynamic amount of resources. Everything in the CloudFormation template must be declared. You can't perform code generation there.
 
@@ -228,7 +241,7 @@ Resources:
             InstanceType: m1.small
 ```
 
-## Outputs
+## Outputs
 
 - The Outputs section of a CF template declares optional output values that we can import into other stacks (if you don't export them first)
 - You can also view the outputs in the AWS Console or via the CLI
@@ -259,7 +272,7 @@ Resources:
         - !ImportValue SSHSecurityGroup
 ```
 
-## Conditions
+## Conditions
 
 Used to control the creation of resoureces or outputs based on a condition
 
@@ -273,7 +286,7 @@ To define:
 
 ```yml
 Conditions:
-  CreateProdResources: !Equals [!Ref EnvType, Prod] # evaluates if EnvType is equal to Prod, true if yes.
+  CreateProdResources: !Equals [!Ref EnvType, Prod] # evaluates if EnvType is equal to Prod, true if yes.
 ```
 
 The intrinsic function can be any of the following:
@@ -305,7 +318,7 @@ Resources:
 - `Fn::Sub`
 - Condition Functions (`Fn::If`,`Fn::Not`,`Fn::Equals` etc)
 
-### Ref
+### Ref
 
 - Parameters => Returns value of the parameter
 - Resources => Returns physical ID of underlying resource (e.g. EC2 ID)
@@ -344,7 +357,7 @@ NewVolume:
     AvailabilityZone: !GetAtt MyInstance.AvailabilityZone   <----
 ```
 
-### Fn::Join
+### Fn::Join
 
 - Joins values with a delimiter
 
@@ -442,7 +455,7 @@ Resources:
                 ensureRunning: "true"
 ```
 
-## cfn-signal and wait conditions
+## cfn-signal and wait conditions
 
 - We dont know how to tell CF that the EC2 instance was properly configured.
 - For this we use cfn-signal.
@@ -496,7 +509,7 @@ Stack Update Fails `UpdateStack API`
 - Stack auto rolls back to previous known working state
 - Ability to see in the log what happened with error messages.
 
-## Nested Stacks
+## Nested Stacks
 
 Stacks that are part of other stacks
 
@@ -533,7 +546,7 @@ Outputs:
     Value: !GetAtt myStack.Outputs.WebsiteURL
 ```
 
-## ChangeSets
+## ChangeSets
 
 When you update a stack, you need to know what changes before it happens (for greater confidence).
 
@@ -541,7 +554,7 @@ ChangeSets wont say if the update will be successful.
 
 ![](./images/change-sets.png)
 
-## DeletionPolicy
+## DeletionPolicy
 
 You can put a deletion policy on any resource to control what happens when the CloudFormation template is deleted.
 

@@ -6,15 +6,22 @@
 **Table of Contents**
 
 - [Elastic Beanstalk for SysOps](#elastic-beanstalk-for-sysops)
+  - [Overview](#overview)
   - [BeanStalk Deployment Modes](#beanstalk-deployment-modes)
     - [All At Once](#all-at-once)
+    - [Rolling](#rolling)
+    - [Rolling with additional batches](#rolling-with-additional-batches)
+    - [Immutable](#immutable)
+    - [Blue / Green](#blue--green)
   - [BeanStalk for SysOps](#beanstalk-for-sysops)
+  - [Tricky question - Golden AMI](#tricky-question---golden-ami)
+  - [Troubleshooting BeanStalk](#troubleshooting-beanstalk)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 Beanstalk features heavily in the Developer Associate exam, however there is still some things you'll need for SysOps.
 
-## Overview
+## Overview
 
 Developer problems on AWS:
 
@@ -77,7 +84,7 @@ What about when you want to update a deployment?
 
 ![](./images/all-at-once.png)
 
-### Rolling
+### Rolling
 
 - Update a few instances at a time (bucket of instances), then moves on to the next bucket once the first bucket is healthy.
 - App runs below capacity
@@ -87,7 +94,7 @@ What about when you want to update a deployment?
 
 ![](./images/ebs-rolling.png)
 
-### Rolling with additional batches
+### Rolling with additional batches
 
 - Like rolling, but spins up new instances to move the batch (so that the old application is still available)
 - **Application runs at capacity.**
@@ -102,7 +109,7 @@ First deploys new instances, then scales down one batch of instances which are t
 
 ![](./images/ebs-rolling-batch.png)
 
-### Immutable
+### Immutable
 
 - Spins up new instances in a **new** ASG, deploys version to these instances, and then swaps all the instances when everything is healthy.
 - Zero downtime.
@@ -116,7 +123,7 @@ BeanStalk will create a temp SG with a single instance inside, when that instanc
 
 ![](./images/ebs-immutable.png)
 
-### Blue / Green
+### Blue / Green
 
 - Not a direct feature of EBS.
 - Zero downtime and release facility.
@@ -134,7 +141,7 @@ BeanStalk will create a temp SG with a single instance inside, when that instanc
 - Custom domain: Route 53 ALIAS or CNAME on top of BeanStalk URL
 - You are not responsible for patching runtimes (Node.js)
 
-## Tricky question - Golden AMI
+## Tricky question - Golden AMI
 
 How does BeanStalk deploy applications?
 
@@ -157,7 +164,7 @@ A Golden AMI = a standardised company-specific AMI with:
 
 By using a Golden AMI to deploy to BeanStalk (in combination of Blue/Green new ASG deployment), our application wont need to resolve dependencies or a long time to configure. All the dependencies and configurations are already present.
 
-## Troubleshooting BeanStalk
+## Troubleshooting BeanStalk
 
 Health = red, try:
 
