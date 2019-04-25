@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [Management of EC2s at scale: Systems Manager](#management-of-ec2s-at-scale-systems-manager)
+  - [Tags](#tags)
+  - [Patching](#patching)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Management of EC2s at scale: Systems Manager
 
 * Helps you manage EC2 and On-Premise systems at scale

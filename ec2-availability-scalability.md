@@ -1,3 +1,18 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [Horizontal Scalability](#horizontal-scalability)
+- [High Availability](#high-availability)
+- [For EC2](#for-ec2)
+- [Load Balancers](#load-balancers)
+- [Load Balancer Stickiness](#load-balancer-stickiness)
+- [LB common troubleshooting](#lb-common-troubleshooting)
+- [Request Tracing](#request-tracing)
+- [CloudWatch Metrics for ASG](#cloudwatch-metrics-for-asg)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # EC2 High Availability and Scalability
 
 ## What is it?

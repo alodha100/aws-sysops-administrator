@@ -1,3 +1,34 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [EC2 for SysOps](#ec2-for-sysops)
+  - [Placement Groups](#placement-groups)
+  - [Termination Protection](#termination-protection)
+  - [Troubleshooting EC2 SSh issues](#troubleshooting-ec2-ssh-issues)
+    - [Username for OS](#username-for-os)
+    - [Connection timeout](#connection-timeout)
+  - [Instance Launch Types](#instance-launch-types)
+    - [On Demand Instances: short workload, predictable pricing.](#on-demand-instances-short-workload-predictable-pricing)
+    - [Reserved instance: long workloads (>= 1 year).](#reserved-instance-long-workloads--1-year)
+    - [Convertible Reserved Instances: long workloads with flexible instances.](#convertible-reserved-instances-long-workloads-with-flexible-instances)
+    - [Scheduled Reserved Instances: launch within reserved time window.](#scheduled-reserved-instances-launch-within-reserved-time-window)
+    - [Spot Instances: short workloads for cheap, can lose instances.](#spot-instances-short-workloads-for-cheap-can-lose-instances)
+    - [Dedicated hosts: book an entire physical server, control instance placement.](#dedicated-hosts-book-an-entire-physical-server-control-instance-placement)
+    - [Dedicated instance: no other customers share hardware.](#dedicated-instance-no-other-customers-share-hardware)
+    - [Which host is right for me?](#which-host-is-right-for-me)
+  - [EC2 Instance Types](#ec2-instance-types)
+    - [M](#m)
+    - [T](#t)
+  - [EC2 AMIs](#ec2-amis)
+    - [Public AMIs](#public-amis)
+    - [Sharing AMIs between AWS accounts](#sharing-amis-between-aws-accounts)
+    - [EXAM TIP](#exam-tip)
+  - [CloudWatch Metrics for EC2](#cloudwatch-metrics-for-ec2)
+  - [CloudWatch Logs for EC2](#cloudwatch-logs-for-ec2)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # EC2 for SysOps
 
 ## Placement Groups
